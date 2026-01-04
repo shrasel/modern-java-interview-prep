@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const sidebarList = document.getElementById('sidebar-list');
     const contentArea = document.getElementById('content-area');
     const emptyState = document.getElementById('empty-state');
@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileBackBtn = document.getElementById('mobile-back-btn');
     
     let activeId = null;
+    let interviewData = [];
 
     // Define Chapters
     const chapters = [
@@ -18,12 +19,23 @@ document.addEventListener('DOMContentLoaded', () => {
         { title: "Concurrency", range: [76, 100], id: "ch4" }
     ];
 
-    // Initialize Sidebar
-    renderSidebar();
+    try {
+        const response = await fetch('data/data.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        interviewData = await response.json();
+        
+        // Initialize Sidebar
+        renderSidebar();
 
-    // Select first item by default (Desktop only)
-    if (interviewData.length > 0 && window.innerWidth >= 768) {
-        selectQuestion(interviewData[0].id);
+        // Select first item by default (Desktop only)
+        if (interviewData.length > 0 && window.innerWidth >= 768) {
+            selectQuestion(interviewData[0].id);
+        }
+    } catch (error) {
+        console.error('Error loading interview data:', error);
+        contentArea.innerHTML = `<div class="text-red-500 p-4">Error loading data. Please check the console or try refreshing the page.</div>`;
     }
 
     // Mobile Back Button Handler

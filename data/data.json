@@ -1,4 +1,4 @@
-const interviewData = [
+[
     {
         "id": 1,
         "question": "What is the difference between JDK, JRE, JVM?",
@@ -652,4 +652,4 @@ const interviewData = [
         "alt": "Your 45-second concurrency pitch?",
         "answer": "<p>Concurrency allows efficient use of system resources. Modern Java moves away from low-level <code>synchronized</code>/<code>wait</code> towards high-level abstractions: <code>ExecutorService</code> for pools, <code>CompletableFuture</code> for async, and <code>Virtual Threads</code> for massive scalability.</p>"
     }
-];
+]
