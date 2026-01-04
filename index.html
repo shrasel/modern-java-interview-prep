@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Core Foundations | Interview Prep</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        slate: {
+                            850: '#151b23', // Custom dark
+                            900: '#0d1117', // GitHub Dark dim
+                            950: '#010409', // GitHub Darker
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar for "World Class" feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #58a6ff;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Code block syntax highlighting simulation */
+        .code-keyword { color: #ff7b72; }
+        .code-string { color: #a5d6ff; }
+        .code-comment { color: #8b949e; }
+        .code-function { color: #d2a8ff; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-300 font-sans h-screen overflow-hidden flex selection:bg-blue-500/30">
+
+    <!-- Sidebar: Chapters & Questions -->
+    <aside id="sidebar" class="w-full md:w-[400px] lg:w-[450px] flex-shrink-0 flex flex-col border-r border-slate-800 bg-slate-900 h-full md:flex">
+        <!-- Sidebar Header -->
+        <div class="p-4 border-b border-slate-800 bg-slate-900 sticky top-0 z-10">
+            <h1 class="text-lg font-bold text-slate-100 tracking-tight">Java Interview</h1>
+        </div>
+
+        <!-- Questions List -->
+        <div id="sidebar-list" class="flex-1 overflow-y-auto p-4 space-y-1">
+            <!-- List items injected by JS -->
+        </div>
+    </aside>
+
+    <!-- Main Content: Answer Area -->
+    <main id="main-container" class="flex-1 h-full overflow-y-auto bg-slate-950 relative hidden md:block">
+        <!-- Mobile Back Button -->
+        <div id="mobile-back-btn" class="md:hidden sticky top-0 z-20 bg-slate-950/95 backdrop-blur border-b border-slate-800 p-4 flex items-center text-slate-400 hover:text-slate-200 cursor-pointer">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <span class="font-medium">Back to Questions</span>
+        </div>
+
+        <div id="content-area" class="max-w-4xl mx-auto p-5 md:p-10 min-h-full flex flex-col justify-start items-start hidden">
+            <!-- Content injected by JS -->
+        </div>
+        
+        <!-- Empty State -->
+        <div id="empty-state" class="absolute inset-0 flex flex-col items-center justify-center text-slate-600">
+            <svg class="w-16 h-16 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <p>Select a question to view the answer</p>
+        </div>
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

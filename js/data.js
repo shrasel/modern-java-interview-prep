@@ -1,0 +1,655 @@
+const interviewData = [
+    {
+        "id": 1,
+        "question": "What is the difference between JDK, JRE, JVM?",
+        "alt": "What do you need to run vs develop Java?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li><strong>JVM</strong> executes Java bytecode (runs .class files).</li><li><strong>JRE</strong> = JVM + standard libraries to run apps.</li><li><strong>JDK</strong> = JRE + developer tools (e.g., javac, debugger) to build apps.</li></ul>",
+        "code": "javac Main.java   # JDK tool (compiler)\njava Main         # runs on JVM + runtime libraries (JRE)",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> JDK builds, JRE runs, JVM executes.</p><p><strong class='text-slate-400'>Common follow-up:</strong> In modern setups you usually install a JDK, which includes what you need.</p></div>"
+    },
+    {
+        "id": 2,
+        "question": "How does Java achieve platform independence?",
+        "alt": "Why is bytecode important?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li>Java compiles source into <strong>bytecode</strong> (.class), not OS-specific machine code.</li><li>The <strong>JVM</strong> on each platform translates bytecode to native execution (interprets/JITs).</li><li>That\u2019s why the same compiled artifact can run across operating systems (with a compatible JVM).</li></ul>",
+        "code": "javac Hello.java  # produces Hello.class (bytecode)\njava Hello        # JVM runs it on your OS",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Platform independence comes from bytecode + JVM.</p><p><strong class='text-slate-400'>Common follow-up:</strong> JIT compilation is what makes JVM performance competitive.</p></div>"
+    },
+    {
+        "id": 3,
+        "question": "What is the difference between stack and heap?",
+        "alt": "Where do objects live vs method frames?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li><strong>Stack:</strong> per-thread call frames (locals, parameters, return addresses). Fast allocate/free.</li><li><strong>Heap:</strong> shared object memory (new objects). Managed by GC.</li><li>Locals can hold references to heap objects; the reference itself is on the stack.</li></ul>",
+        "code": "void f() {\n    int x = 10;                 // stack\n    User u = new User(\"A\");     // reference on stack, object on heap\n}",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Locals live on stack; objects created with new live on heap.</p><p><strong class='text-slate-400'>Common follow-up:</strong> Java \u201cmemory leaks\u201d are usually reference leaks (objects kept reachable).</p></div>"
+    },
+    {
+        "id": 4,
+        "question": "What is pass-by-value in Java?",
+        "alt": "Is Java pass-by-reference?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li>Java is <strong>always pass-by-value</strong>.</li><li>For objects, the value passed is a <strong>copy of the reference</strong>, so mutation is visible, reassignment is not.</li></ul>",
+        "code": "void mutate(User u) { u.name = \"New\"; }      // caller sees change\nvoid reassign(User u){ u = new User(\"X\"); }  // caller unchanged",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> You can mutate the object, but you can\u2019t swap the caller\u2019s reference.</p><p><strong class='text-slate-400'>Common follow-up:</strong> This explains why swap(a,b) doesn\u2019t work the way it does in some languages.</p></div>"
+    },
+    {
+        "id": 5,
+        "question": "What is immutability?",
+        "alt": "Why are Strings immutable?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li><strong>Immutable</strong> means state can\u2019t change after construction.</li><li><strong>String</strong> is immutable: concatenation creates a new String rather than changing the original.</li><li><strong>Benefits:</strong> safe sharing, thread-safety, stable hashing (good for map keys).</li></ul>",
+        "code": "String s = \"a\";\ns.concat(\"b\");          // creates new String\nSystem.out.println(s);  // still \"a\"",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> If you need frequent changes, use StringBuilder, not String.</p><p><strong class='text-slate-400'>Common follow-up:</strong> Immutability is a core technique to simplify concurrency.</p></div>"
+    },
+    {
+        "id": 6,
+        "question": "equals() vs == ?",
+        "alt": "How do you compare objects correctly?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li><code>==</code> compares <strong>reference identity</strong> (same object).</li><li><code>equals()</code> compares <strong>logical equality</strong> (meaning defined by the class).</li><li>For value objects, override <code>equals()</code> (and <code>hashCode()</code>).</li></ul>",
+        "code": "String a = new String(\"x\");\nString b = new String(\"x\");\nSystem.out.println(a == b);       // false\nSystem.out.println(a.equals(b));  // true",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Use == for identity, equals() for value semantics.</p><p><strong class='text-slate-400'>Common follow-up:</strong> If you override equals(), you must also override hashCode().</p></div>"
+    },
+    {
+        "id": 7,
+        "question": "hashCode contract?",
+        "alt": "Why must equals and hashCode align?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li>If <code>a.equals(b)</code> is true, then <code>a.hashCode()</code> <strong>must</strong> equal <code>b.hashCode()</code>.</li><li>If they don\u2019t align, hash-based collections (e.g., HashMap) can misbehave.</li><li>Unequal objects can share hash codes; more collisions can reduce performance.</li></ul>",
+        "code": "record Money(int amount, String currency) {}\nvar m1 = new Money(10, \"USD\");\nvar m2 = new Money(10, \"USD\");\nSystem.out.println(m1.equals(m2));\nSystem.out.println(m1.hashCode() == m2.hashCode());",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Equal implies same hashCode.</p><p><strong class='text-slate-400'>Common follow-up:</strong> Records help because they generate equals/hashCode/toString automatically.</p></div>"
+    },
+    {
+        "id": 8,
+        "question": "Overloading vs overriding?",
+        "alt": "Compile-time vs runtime polymorphism?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li><strong>Overloading:</strong> same name, different parameters; chosen at compile time.</li><li><strong>Overriding:</strong> subclass replaces parent implementation; chosen at runtime (dynamic dispatch).</li><li>Polymorphism is about runtime type; overloading is about compile-time signatures.</li></ul>",
+        "code": "class A { void m(int x) {} void m(String s) {} } // overload\nclass B extends A { @Override void m(int x) {} } // override",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Overload = same name/different args; Override = same signature/new behavior.</p><p><strong class='text-slate-400'>Common follow-up:</strong> Overloading + autoboxing can create surprising method selection.</p></div>"
+    },
+    {
+        "id": 9,
+        "question": "Abstract class vs interface?",
+        "alt": "When do you choose interface over abstract?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li>Use <strong>interface</strong> to define a capability/contract across unrelated types (supports multiple inheritance of type).</li><li>Use <strong>abstract class</strong> when you need shared state/behavior and a partial implementation.</li><li>Interfaces can have default methods (since Java 8) for backward-compatible evolution.</li></ul>",
+        "code": "interface Auditable { default Instant now(){ return Instant.now(); } }\nabstract class BaseEntity { UUID id; }",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Interface for \u201cwhat it can do\u201d; abstract class for shared base behavior/state.</p><p><strong class='text-slate-400'>Common follow-up:</strong> Prefer composition, but interfaces are excellent contracts.</p></div>"
+    },
+    {
+        "id": 10,
+        "question": "What is SOLID in Java context?",
+        "alt": "Which SOLID rule prevents \u201cgod classes\u201d?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li><strong>SOLID</strong> is five principles for maintainable code.</li><li><strong>Single Responsibility (SRP)</strong> fights god classes: one reason to change.</li><li><strong>Open/Closed:</strong> extend behavior without rewriting existing code (polymorphism).</li><li><strong>Dependency Inversion:</strong> depend on abstractions, not concrete implementations.</li></ul>",
+        "code": "interface PaymentGateway { Receipt charge(Money m); }\nclass CheckoutService {\n    private final PaymentGateway gateway;\n    CheckoutService(PaymentGateway gateway){ this.gateway = gateway; }\n}",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> If a class has many unrelated reasons to change, SRP is broken.</p><p><strong class='text-slate-400'>Common follow-up:</strong> In interviews, tie SOLID to testability and safe refactoring.</p></div>"
+    },
+    {
+        "id": 11,
+        "question": "Checked vs unchecked exceptions?",
+        "alt": "When do you throw RuntimeException?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li><strong>Checked:</strong> caller must handle/declare; best for recoverable conditions (e.g., I/O).</li><li><strong>Unchecked (RuntimeException):</strong> programmer/contract errors or non-recoverable states.</li><li>Many teams keep APIs cleaner with unchecked, backed by validation and tests.</li></ul>",
+        "code": "Files.readString(Path.of(\"a.txt\"));      // checked IOException\nObjects.requireNonNull(arg, \"arg\");      // unchecked for contract breach",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Checked = caller can recover; unchecked = fix the code.</p><p><strong class='text-slate-400'>Common follow-up:</strong> Don\u2019t swallow exceptions; wrap with context when rethrowing.</p></div>"
+    },
+    {
+        "id": 12,
+        "question": "try-with-resources?",
+        "alt": "How do you avoid resource leaks?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li>Automatically closes resources at block exit\u2014even on exceptions.</li><li>Works with anything implementing <code>AutoCloseable</code>.</li><li>Cleaner and safer than manual finally-based cleanup.</li></ul>",
+        "code": "try (var in = Files.newBufferedReader(Path.of(\"a.txt\"))) {\n    System.out.println(in.readLine());\n} // auto-close here",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> If something must be closed, put it in try-with-resources.</p><p><strong class='text-slate-400'>Common follow-up:</strong> It handles suppressed exceptions when close() fails.</p></div>"
+    },
+    {
+        "id": 13,
+        "question": "final / finally / finalize?",
+        "alt": "What are these three \u201cfinal\u201d words?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li><strong>final:</strong> constant reference / prevents overriding / prevents inheritance depending on usage.</li><li><strong>finally:</strong> cleanup block that runs after try (even on exception).</li><li><strong>finalize():</strong> old cleanup hook; unreliable and deprecated\u2014prefer deterministic cleanup patterns.</li></ul>",
+        "code": "try (var s = new Socket(host, 80)) {\n    // use socket\n} // deterministic cleanup\n// Avoid finalize(); it may run late or never.",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> No finalize() in modern Java\u2014use deterministic cleanup.</p><p><strong class='text-slate-400'>Common follow-up:</strong> GC is not a resource manager; it is a memory manager.</p></div>"
+    },
+    {
+        "id": 14,
+        "question": "What is a classloader?",
+        "alt": "How are classes loaded at runtime?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li>A class loader loads class definitions into the JVM.</li><li>Each Class is associated with the loader that defined it.</li><li>Different loaders can load classes with the same name; this enables plugins but can cause boundary issues.</li></ul>",
+        "code": "Class<?> c = MyService.class;\nSystem.out.println(c.getClassLoader());",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Many mysterious runtime issues are classpath/loader boundary problems.</p><p><strong class='text-slate-400'>Common follow-up:</strong> In app servers, classloader hierarchy matters.</p></div>"
+    },
+    {
+        "id": 15,
+        "question": "What is reflection used for?",
+        "alt": "When is reflection a bad idea?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li>Reflection inspects and interacts with classes/methods/fields at runtime.</li><li>Great for frameworks (DI, ORM, serialization), tooling, and generic libraries.</li><li><strong>Downsides:</strong> slower, brittle, less compile-time safety, and may clash with encapsulation restrictions.</li></ul>",
+        "code": "var m = User.class.getDeclaredMethod(\"getId\");\nObject id = m.invoke(user);",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Use reflection at framework boundaries, not everyday business logic.</p><p><strong class='text-slate-400'>Common follow-up:</strong> Prefer normal APIs when possible; reflection is a last resort.</p></div>"
+    },
+    {
+        "id": 16,
+        "question": "What is annotation processing?",
+        "alt": "How do Lombok/Spring do compile-time magic?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li>Annotation processing runs at compile time to validate code and generate sources.</li><li>It is used to produce boilerplate (builders, mappers, meta-models) without runtime reflection.</li><li>It improves ergonomics but can hide what is actually compiled.</li></ul>",
+        "code": "@Mapper\ninterface UserMapper {\n    UserDto toDto(User u);\n} // generated implementation at build time",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Annotation processing trades runtime reflection for compile-time generation.</p><p><strong class='text-slate-400'>Common follow-up:</strong> When debugging, inspect generated sources.</p></div>"
+    },
+    {
+        "id": 17,
+        "question": "StringBuilder vs StringBuffer?",
+        "alt": "When do you care about thread safety in strings?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li>Both build strings efficiently using a mutable buffer.</li><li><strong>StringBuffer</strong> is synchronized (thread-safe); <strong>StringBuilder</strong> is not and is usually faster.</li><li>In typical single-threaded string construction, prefer StringBuilder.</li></ul>",
+        "code": "var sb = new StringBuilder();\nfor (int i=0; i<3; i++) sb.append(i);\nSystem.out.println(sb.toString());",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Default to StringBuilder unless you truly share the instance across threads.</p><p><strong class='text-slate-400'>Common follow-up:</strong> In loops, avoid s += ... because it creates many temporary Strings.</p></div>"
+    },
+    {
+        "id": 18,
+        "question": "What is serialization?",
+        "alt": "Why is Java serialization considered risky?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li>Serialization converts an object graph into bytes; deserialization reconstructs it.</li><li>Deserializing untrusted data is dangerous and can enable attacks.</li><li>If you must deserialize, restrict allowed classes (filters) and prefer explicit formats for external inputs.</li></ul>",
+        "code": "// Safer posture: avoid native Java serialization for external inputs.\n// Prefer JSON/Proto + explicit schemas, or apply strict deserialization filtering.",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Never deserialize untrusted bytes without strict allow-listing/filters.</p><p><strong class='text-slate-400'>Common follow-up:</strong> Many teams avoid Java native serialization entirely for external APIs.</p></div>"
+    },
+    {
+        "id": 19,
+        "question": "What is a POJO vs record?",
+        "alt": "When should you use records?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li><strong>POJO</strong> is a normal class; you write boilerplate manually.</li><li>A <strong>record</strong> is a compact data carrier that auto-generates equals/hashCode/toString and accessors.</li><li>Records are ideal for DTOs and small immutable-like data aggregates.</li></ul>",
+        "code": "public record UserDto(long id, String name) {}",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> If it\u2019s \u201cjust data,\u201d a record is a clean default.</p><p><strong class='text-slate-400'>Common follow-up:</strong> For entities with identity/lifecycle/mutation, a class is often better.</p></div>"
+    },
+    {
+        "id": 20,
+        "question": "What are default methods in interfaces?",
+        "alt": "Why were default methods added?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li>Default methods let interfaces add behavior without breaking existing implementers.</li><li>This enables backward-compatible evolution of library interfaces.</li><li>Use them carefully; they are best for library design, not as a general inheritance mechanism.</li></ul>",
+        "code": "interface Loggable {\n    default void log(String msg) { System.out.println(msg); }\n}\nclass Service implements Loggable {}",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Default methods are mainly for evolving library interfaces safely.</p><p><strong class='text-slate-400'>Common follow-up:</strong> If two interfaces define the same default method, the class must resolve it.</p></div>"
+    },
+    {
+        "id": 21,
+        "question": "What is Optional for?",
+        "alt": "Why not use Optional everywhere?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li><strong>Optional</strong> represents \u201cvalue may be absent\u201d and is best used as a return type to avoid null bugs.</li><li>It encourages explicit handling via map/orElse/orElseThrow.</li><li>Avoid overusing it in fields/params; keep APIs practical and clear.</li></ul>",
+        "code": "Optional<User> findUser(long id) { ... }\nvar name = findUser(1)\n    .map(User::getName)\n    .orElse(\"Guest\");",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Optional is best for method returns, not everywhere.</p><p><strong class='text-slate-400'>Common follow-up:</strong> Avoid calling get() without presence checks.</p></div>"
+    },
+    {
+        "id": 22,
+        "question": "How does garbage collection work at a high level?",
+        "alt": "Who frees memory in Java?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li>The JVM manages heap memory automatically using GC.</li><li>Most collectors are generational: allocate in young, promote survivors to old.</li><li>GC reclaims unreachable objects; you influence it by reducing allocations and avoiding reference leaks.</li></ul>",
+        "code": "// GC pressure example: many temporary allocations\nfor (int i=0; i<1_000_000; i++) {\n    var tmp = \"x\" + i;\n}",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Don\u2019t try to force GC; reduce allocations and retain fewer long-lived references.</p><p><strong class='text-slate-400'>Common follow-up:</strong> Tune GC last\u2014profile allocations and hotspots first.</p></div>"
+    },
+    {
+        "id": 23,
+        "question": "What is the difference between young and old generation?",
+        "alt": "Why do short-lived objects matter?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li>Young gen holds newly created objects; old gen holds long-lived survivors.</li><li>Most objects die young; minor GCs collect young more frequently and cheaply.</li><li>If too many objects survive and promote, old-gen pressure rises and pauses can grow.</li></ul>",
+        "code": "// Example old-gen pressure: large unbounded cache\nstatic final Map<String, byte[]> CACHE = new HashMap<>();",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Keep big caches bounded; let most objects die young.</p><p><strong class='text-slate-400'>Common follow-up:</strong> Promotion pressure is a common cause of latency spikes.</p></div>"
+    },
+    {
+        "id": 24,
+        "question": "What are JVM flags and system properties?",
+        "alt": "How do you tune Java at runtime?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li>JVM flags configure the VM at startup (heap sizes, GC, diagnostics).</li><li>System properties are key/value settings accessible via <code>System.getProperty</code> and set with <code>-Dkey=value</code>.</li><li>Use flags for VM behavior; use properties for app configuration knobs.</li></ul>",
+        "code": "java -Dapp.env=prod -Xms512m -Xmx512m -jar app.jar\nString env = System.getProperty(\"app.env\"); // \"prod\"",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Flags for VM behavior, -D properties for app config.</p><p><strong class='text-slate-400'>Common follow-up:</strong> Prefer externalized config for deployments; keep -D for essentials.</p></div>"
+    },
+    {
+        "id": 25,
+        "question": "What\u2019s new from Java 8 to modern Java in one minute?",
+        "alt": "Summarize Java evolution quickly.",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li>Java 8 introduced the functional era: lambdas/streams/Optional, changing coding style.</li><li>Java 9 introduced modules and a faster release cadence for predictable upgrades.</li><li>Java 16+ records reduced boilerplate for data carriers; Java 21 brought virtual threads for scalable I/O concurrency.</li><li>Java 25 is a modern LTS baseline for many enterprises adopting post-21 features.</li></ul>",
+        "code": "record User(long id, String name) {}\nvar names = users.stream().map(User::name).toList();",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> Know the LTS baselines (8/11/17/21/25) and the headline features teams adopt.</p><p><strong class='text-slate-400'>Common follow-up:</strong> Tailor this summary to the company\u2019s Java version: 11 vs 17 vs 21/25.</p></div>"
+    },
+    {
+        "id": 26,
+        "question": "List vs Set vs Map?",
+        "alt": "How do you choose a collection type?",
+        "answer": "<p><strong>List:</strong> Ordered collection, allows duplicates. Access by index. (e.g., <code>ArrayList</code>).</p><p><strong>Set:</strong> Unordered collection, unique elements. No duplicates. (e.g., <code>HashSet</code>).</p><p><strong>Map:</strong> Key-Value pairs. Keys must be unique. (e.g., <code>HashMap</code>).</p>"
+    },
+    {
+        "id": 27,
+        "question": "ArrayList vs LinkedList?",
+        "alt": "Which is faster and why?",
+        "answer": "<p><strong>ArrayList:</strong> Backed by a dynamic array. Fast random access (O(1)). Slow insertions/deletions (O(n)) because of shifting.</p><p><strong>LinkedList:</strong> Backed by a doubly-linked list. Fast insertions/deletions (O(1)). Slow random access (O(n)).</p>"
+    },
+    {
+        "id": 28,
+        "question": "HashMap vs TreeMap?",
+        "alt": "Ordering vs performance tradeoff?",
+        "answer": "<p><strong>HashMap:</strong> No order. O(1) lookup/insert. Uses hashing.</p><p><strong>TreeMap:</strong> Sorted order (natural or comparator). O(log n) lookup/insert. Uses Red-Black tree.</p>"
+    },
+    {
+        "id": 29,
+        "question": "HashSet vs TreeSet?",
+        "alt": "When do you need sorted uniqueness?",
+        "answer": "<p><strong>HashSet:</strong> Unordered, unique. O(1). Backed by HashMap.</p><p><strong>TreeSet:</strong> Sorted, unique. O(log n). Backed by TreeMap.</p>"
+    },
+    {
+        "id": 30,
+        "question": "fail-fast iterators?",
+        "alt": "Why do you get ConcurrentModificationException?",
+        "answer": "<p>Iterators that immediately throw <code>ConcurrentModificationException</code> if the collection is modified structurally (add/remove) by any means other than the iterator's own <code>remove()</code> method during iteration.</p>"
+    },
+    {
+        "id": 31,
+        "question": "Comparable vs Comparator?",
+        "alt": "Natural ordering vs custom ordering?",
+        "answer": "<p><strong>Comparable:</strong> Implemented by the class itself (<code>compareTo</code>). Defines \"natural ordering\".</p><p><strong>Comparator:</strong> Separate class/lambda (<code>compare</code>). Defines custom ordering without modifying the original class.</p>"
+    },
+    {
+        "id": 32,
+        "question": "Why is HashMap key immutability important?",
+        "alt": "What breaks if key changes?",
+        "answer": "<p>If a key's hash code changes after insertion, the map won't be able to find it in the correct bucket during lookup, leading to data loss (returning null).</p>"
+    },
+    {
+        "id": 33,
+        "question": "What is load factor and resizing?",
+        "alt": "Why does HashMap \u201crehash\u201d?",
+        "answer": "<p><strong>Load Factor:</strong> Measure of how full the map is allowed to get (default 0.75). </p><p><strong>Resizing:</strong> When threshold is reached, capacity doubles, and all entries are re-hashed to new buckets.</p>"
+    },
+    {
+        "id": 34,
+        "question": "What are generics?",
+        "alt": "Why do we need type parameters?",
+        "answer": "<p>Generics enable types (classes and interfaces) to be parameters when defining classes, interfaces and methods. They provide compile-time type safety and eliminate the need for casting.</p>",
+        "code": "List<String> list = new ArrayList<>();\nlist.add(\"Hello\");\n// list.add(123); // Compile error"
+    },
+    {
+        "id": 35,
+        "question": "Type erasure?",
+        "alt": "Why can\u2019t I do new T()?",
+        "answer": "<p>The process where the compiler removes all generic type information at compile time, replacing it with bounds or <code>Object</code>. This ensures backward compatibility with older Java versions.</p>"
+    },
+    {
+        "id": 36,
+        "question": "Wildcards: extends vs super?",
+        "alt": "PECS rule?",
+        "answer": "<p><strong>PECS:</strong> Producer Extends, Consumer Super.</p><ul><li>Use <code>? extends T</code> when you only <strong>get</strong> values (Producer).</li><li>Use <code>? super T</code> when you only <strong>put</strong> values (Consumer).</li></ul>"
+    },
+    {
+        "id": 37,
+        "question": "Immutable collections?",
+        "alt": "How do you prevent accidental mutation?",
+        "answer": "<p>Collections that cannot be modified after creation. <code>List.of()</code>, <code>Set.of()</code>, <code>Map.of()</code> create truly immutable collections. <code>Collections.unmodifiableList()</code> creates a read-only view.</p>"
+    },
+    {
+        "id": 38,
+        "question": "ConcurrentHashMap vs synchronizedMap?",
+        "alt": "How does CHM scale?",
+        "answer": "<p><strong>SynchronizedMap:</strong> Locks the entire map for every operation. Poor scalability.</p><p><strong>ConcurrentHashMap:</strong> Uses fine-grained locking (bucket-level) and CAS operations. Allows concurrent reads and writes.</p>"
+    },
+    {
+        "id": 39,
+        "question": "CopyOnWriteArrayList use-case?",
+        "alt": "When is COW good?",
+        "answer": "<p>A thread-safe variant of ArrayList where all mutative operations (add, set) are implemented by making a fresh copy of the underlying array. Ideal for scenarios with many reads and very few writes (e.g., listeners).</p>"
+    },
+    {
+        "id": 40,
+        "question": "What is a Spliterator?",
+        "alt": "How do streams split work?",
+        "answer": "<p>\"Splitable Iterator\". It allows traversing and partitioning elements of a source. It is the mechanism behind parallel streams, allowing tasks to be split across threads.</p>"
+    },
+    {
+        "id": 41,
+        "question": "Iterable vs Iterator?",
+        "alt": "foreach uses what?",
+        "answer": "<p><strong>Iterable:</strong> Interface representing a collection that can be iterated (has <code>iterator()</code> method). Used in for-each loops.</p><p><strong>Iterator:</strong> The object that manages the iteration state (hasNext, next).</p>"
+    },
+    {
+        "id": 42,
+        "question": "Queue vs Deque?",
+        "alt": "Stack vs queue choices?",
+        "answer": "<p><strong>Queue:</strong> FIFO (First-In-First-Out). Add at tail, remove from head.</p><p><strong>Deque:</strong> Double Ended Queue. Add/remove from both ends. Can be used as Stack (LIFO) or Queue.</p>"
+    },
+    {
+        "id": 43,
+        "question": "PriorityQueue behavior?",
+        "alt": "Why isn\u2019t it fully sorted?",
+        "answer": "<p>A queue where elements are ordered by priority (natural or comparator). It is implemented as a heap. The head is always the least element, but the rest of the array is not fully sorted.</p>"
+    },
+    {
+        "id": 44,
+        "question": "WeakHashMap use-case?",
+        "alt": "When do entries disappear?",
+        "answer": "<p>A Map where keys are <code>WeakReference</code>. If a key is no longer referenced strongly elsewhere, the entry is automatically removed by GC. Useful for caching metadata.</p>"
+    },
+    {
+        "id": 45,
+        "question": "IdentityHashMap use-case?",
+        "alt": "When does == map matter?",
+        "answer": "<p>A Map that uses reference equality (<code>==</code>) instead of object equality (<code>equals()</code>) for keys. Rare, used for topology preservation in serialization.</p>"
+    },
+    {
+        "id": 46,
+        "question": "EnumSet/EnumMap?",
+        "alt": "Best collections for enums?",
+        "answer": "<p>Specialized collections for Enum keys/elements. Implemented using bit vectors (EnumSet) or arrays (EnumMap). Extremely memory efficient and fast.</p>"
+    },
+    {
+        "id": 47,
+        "question": "Why prefer interfaces in signatures?",
+        "alt": "List vs ArrayList parameter?",
+        "answer": "<p>Coding to interfaces (e.g., <code>List</code>) instead of implementations (e.g., <code>ArrayList</code>) decouples code from specific implementation details, allowing you to change the underlying collection later without breaking client code.</p>"
+    },
+    {
+        "id": 48,
+        "question": "Defensive copying?",
+        "alt": "How do you protect internal state?",
+        "answer": "<p>Returning a copy of a mutable object (like a Date or List) from a getter instead of the original reference, to prevent external code from modifying the internal state of the class.</p>"
+    },
+    {
+        "id": 49,
+        "question": "Big-O in Java collections?",
+        "alt": "What are typical complexities?",
+        "answer": "<ul><li><strong>ArrayList/HashMap:</strong> O(1) get/add (amortized).</li><li><strong>LinkedList:</strong> O(1) insert/delete, O(n) search.</li><li><strong>TreeMap/TreeSet:</strong> O(log n).</li><li><strong>Contains (List):</strong> O(n).</li></ul>"
+    },
+    {
+        "id": 50,
+        "question": "Common collection pitfalls?",
+        "alt": "Top mistakes with HashMap/List?",
+        "answer": "<ul><li>Modifying a list while iterating (ConcurrentModificationException).</li><li>Using mutable objects as Map keys.</li><li>Using <code>contains()</code> on a large List (slow).</li><li>Not setting initial capacity for large collections.</li></ul>"
+    },
+    {
+        "id": 51,
+        "question": "What is a functional interface?",
+        "alt": "Why does @FunctionalInterface matter?",
+        "answer": "<p>An interface with exactly one abstract method. It serves as the target type for lambda expressions and method references. <code>@FunctionalInterface</code> annotation ensures the compiler checks this rule.</p>"
+    },
+    {
+        "id": 52,
+        "question": "Lambda vs anonymous class?",
+        "alt": "What changes in scope/this?",
+        "answer": "<p><strong>Lambda:</strong> Lexical scoping. <code>this</code> refers to the enclosing class. No new scope.</p><p><strong>Anonymous Class:</strong> Creates a new scope. <code>this</code> refers to the anonymous class instance.</p>"
+    },
+    {
+        "id": 53,
+        "question": "Method references?",
+        "alt": "When are :: references cleaner?",
+        "answer": "<p>Shorthand syntax for a lambda expression that executes just ONE method. E.g., <code>System.out::println</code> instead of <code>x -> System.out.println(x)</code>.</p>"
+    },
+    {
+        "id": 54,
+        "question": "Stream vs collection?",
+        "alt": "Are streams data structures?",
+        "answer": "<p><strong>Collection:</strong> In-memory data structure that holds elements.</p><p><strong>Stream:</strong> A pipeline of operations to process data. It does not store data, is lazy, and can be consumed only once.</p>"
+    },
+    {
+        "id": 55,
+        "question": "map vs flatMap?",
+        "alt": "How do you avoid nested Optionals?",
+        "answer": "<p><strong>map:</strong> Transforms T -> R. One-to-one.</p><p><strong>flatMap:</strong> Transforms T -> Stream&lt;R&gt; and flattens the result. One-to-many. Used to flatten nested structures (e.g., <code>List&lt;List&lt;String&gt;&gt;</code>).</p>"
+    },
+    {
+        "id": 56,
+        "question": "filter vs peek?",
+        "alt": "Why is peek controversial?",
+        "answer": "<p><strong>filter:</strong> Intermediate operation to select elements.</p><p><strong>peek:</strong> Intermediate operation to perform a side-effect (like logging) without modifying the stream. Should not be used to modify state.</p>"
+    },
+    {
+        "id": 57,
+        "question": "reduce vs collect?",
+        "alt": "When to use collectors?",
+        "answer": "<p><strong>reduce:</strong> Immutable reduction. Combines elements into a single value (e.g., sum).</p><p><strong>collect:</strong> Mutable reduction. Accumulates elements into a container (e.g., List, Map).</p>"
+    },
+    {
+        "id": 58,
+        "question": "Parallel streams pitfalls?",
+        "alt": "Why can parallel be slower?",
+        "answer": "<p>Parallel streams use the common ForkJoinPool. Overhead of splitting and merging can exceed the speedup for small datasets. Also dangerous if operations have side effects or blocking calls.</p>"
+    },
+    {
+        "id": 59,
+        "question": "Optional best practices?",
+        "alt": "When not to return Optional?",
+        "answer": "<p>Use Optional primarily as a return type for methods that might not return a value. Avoid using it for fields, parameters, or in collections. Never call <code>get()</code> without <code>isPresent()</code>.</p>"
+    },
+    {
+        "id": 60,
+        "question": "Collectors.groupingBy?",
+        "alt": "How to aggregate by key?",
+        "answer": "<p>Similar to SQL GROUP BY. Collects elements into a Map where the key is the result of a classifier function and the value is a List of items matching that key.</p>"
+    },
+    {
+        "id": 61,
+        "question": "Collectors.toMap merge?",
+        "alt": "How to handle duplicate keys?",
+        "answer": "<p>When creating a Map from a Stream, if two elements map to the same key, <code>toMap</code> throws <code>IllegalStateException</code> unless a merge function is provided to resolve the collision.</p>"
+    },
+    {
+        "id": 62,
+        "question": "Lazy evaluation in streams?",
+        "alt": "Why aren\u2019t operations executed?",
+        "answer": "<p>Intermediate operations (filter, map) are lazy. They are not executed until a terminal operation (collect, forEach) is invoked. This allows optimization (e.g., loop fusion).</p>"
+    },
+    {
+        "id": 63,
+        "question": "Short-circuiting operations?",
+        "alt": "anyMatch/findFirst performance?",
+        "answer": "<p>Operations like <code>findFirst</code>, <code>anyMatch</code>, <code>limit</code> don't need to process the entire stream. They stop as soon as the result is determined.</p>"
+    },
+    {
+        "id": 64,
+        "question": "Functional purity vs side effects?",
+        "alt": "Why side effects break streams?",
+        "answer": "<p>Stream operations should be stateless and side-effect free. Modifying external state from within a stream function makes the behavior non-deterministic, especially in parallel streams.</p>"
+    },
+    {
+        "id": 65,
+        "question": "CompletableFuture basics?",
+        "alt": "Async composition patterns?",
+        "answer": "<p>A Future that can be explicitly completed and supports dependent functions and actions that trigger upon its completion. Allows chaining async tasks.</p>"
+    },
+    {
+        "id": 66,
+        "question": "thenCompose vs thenApply?",
+        "alt": "Flattening futures?",
+        "answer": "<p><strong>thenApply:</strong> Transforms the result (map). Returns <code>Future&lt;Future&lt;T&gt;&gt;</code> if the function returns a Future.</p><p><strong>thenCompose:</strong> Flattens the result (flatMap). Used when the callback returns a Future itself.</p>"
+    },
+    {
+        "id": 67,
+        "question": "Exception handling in futures?",
+        "alt": "handle vs exceptionally?",
+        "answer": "<p><strong>exceptionally:</strong> Callback only for errors (recovery).</p><p><strong>handle:</strong> Callback for both success and failure. Allows transforming the result or error.</p>"
+    },
+    {
+        "id": 68,
+        "question": "Stream of primitives?",
+        "alt": "IntStream vs Stream?",
+        "answer": "<p><code>IntStream</code>, <code>LongStream</code>, <code>DoubleStream</code> are specialized streams for primitives. They avoid the overhead of boxing/unboxing integers to Integer objects.</p>"
+    },
+    {
+        "id": 69,
+        "question": "Optional.orElse vs orElseGet?",
+        "alt": "Why does orElse sometimes hurt?",
+        "answer": "<p><strong>orElse(value):</strong> The value is <em>always</em> evaluated, even if Optional is present.</p><p><strong>orElseGet(Supplier):</strong> The supplier is executed <em>only</em> if Optional is empty (lazy).</p>"
+    },
+    {
+        "id": 70,
+        "question": "\u201cEffectively final\u201d variables?",
+        "alt": "Why lambda needs final-ish vars?",
+        "answer": "<p>Local variables used in a lambda must be final or effectively final (never assigned a new value). This is because lambdas capture values, not variables.</p>"
+    },
+    {
+        "id": 71,
+        "question": "Common stream interview tasks?",
+        "alt": "Top 5 stream questions?",
+        "answer": "<ul><li>Find frequency of characters in string.</li><li>Sort a map by value.</li><li>Find first non-repeating character.</li><li>Flatten a list of lists.</li><li>Group objects by property.</li></ul>"
+    },
+    {
+        "id": 72,
+        "question": "Designing APIs with functional style?",
+        "alt": "When to expose streams?",
+        "answer": "<p>Return Stream if the caller might want to perform further operations (filter/map). Accept Functional Interfaces (Supplier, Function) to allow flexible behavior injection.</p>"
+    },
+    {
+        "id": 73,
+        "question": "Records + streams synergy?",
+        "alt": "Why records fit pipelines?",
+        "answer": "<p>Records provide a concise way to model immutable data, which is perfect for the functional style of streams where data is transformed rather than mutated.</p>"
+    },
+    {
+        "id": 74,
+        "question": "Pattern matching improves FP?",
+        "alt": "How modern Java reduces boilerplate?",
+        "answer": "<p>Pattern matching (instanceof, switch) allows destructuring data and executing logic based on type/structure, reducing the need for casting and improving readability in functional flows.</p>"
+    },
+    {
+        "id": 75,
+        "question": "Summarize Java FP in 30 seconds?",
+        "alt": "What did Java 8 change?",
+        "answer": "<p>Java 8 introduced functional programming concepts: Lambdas for concise code, Streams for declarative data processing, and Optional for null safety. It shifted focus from \"how to do it\" (loops) to \"what to do\" (pipelines).</p>"
+    },
+    {
+        "id": 76,
+        "question": "Thread vs Runnable vs Callable?",
+        "alt": "When do you need Callable?",
+        "answer": "<p><strong>Thread:</strong> Represents an OS thread.</p><p><strong>Runnable:</strong> A task that returns void and cannot throw checked exceptions.</p><p><strong>Callable:</strong> A task that returns a value and can throw exceptions.</p>"
+    },
+    {
+        "id": 77,
+        "question": "synchronized meaning?",
+        "alt": "What is an intrinsic lock?",
+        "answer": "<p>Keyword that acquires the intrinsic lock (monitor) of an object (or class). Ensures that only one thread can execute the synchronized block/method at a time.</p>"
+    },
+    {
+        "id": 78,
+        "question": "volatile meaning?",
+        "alt": "Visibility vs atomicity?",
+        "answer": "<p>Guarantees <strong>visibility</strong> of changes to variables across threads (happens-before relationship). It does NOT guarantee atomicity (e.g., i++ is not safe).</p>"
+    },
+    {
+        "id": 79,
+        "question": "Atomic classes?",
+        "alt": "When to use AtomicInteger?",
+        "answer": "<p>Classes like <code>AtomicInteger</code> use CAS (Compare-And-Swap) hardware instructions to perform thread-safe operations without locks. Faster than synchronized for simple counters.</p>"
+    },
+    {
+        "id": 80,
+        "question": "wait/notify vs Lock/Condition?",
+        "alt": "Why prefer java.util.concurrent?",
+        "answer": "<p><strong>wait/notify:</strong> Low-level, tied to synchronized blocks.</p><p><strong>Lock/Condition:</strong> More flexible. Allows multiple conditions per lock, tryLock (non-blocking), and fair locking.</p>"
+    },
+    {
+        "id": 81,
+        "question": "ExecutorService patterns?",
+        "alt": "How do thread pools work?",
+        "answer": "<p>Decouples task submission from execution. Manages a pool of threads. Common pools: FixedThreadPool (stable load), CachedThreadPool (bursty load), ScheduledThreadPool.</p>"
+    },
+    {
+        "id": 82,
+        "question": "Future vs CompletableFuture?",
+        "alt": "Blocking vs non-blocking async?",
+        "answer": "<p><strong>Future:</strong> <code>get()</code> is blocking. Hard to compose.</p><p><strong>CompletableFuture:</strong> Non-blocking, callback-based, composable pipeline.</p>"
+    },
+    {
+        "id": 83,
+        "question": "Deadlock vs livelock vs starvation?",
+        "alt": "How do you recognize each?",
+        "answer": "<p><strong>Deadlock:</strong> Threads waiting on each other forever.</p><p><strong>Livelock:</strong> Threads acting but making no progress (polite loop).</p><p><strong>Starvation:</strong> Thread never gets CPU time because of lower priority.</p>"
+    },
+    {
+        "id": 84,
+        "question": "ThreadLocal use-case?",
+        "alt": "Why does ThreadLocal leak?",
+        "answer": "<p>Stores data accessible only to a specific thread (e.g., Transaction context). <strong>Risk:</strong> If used in a thread pool, values persist and can cause memory leaks if not cleaned up.</p>"
+    },
+    {
+        "id": 85,
+        "question": "ConcurrentHashMap internals?",
+        "alt": "Why scales better than HashMap sync?",
+        "answer": "<p>Uses a table of nodes. Reads are lock-free. Writes lock only the specific bin (bucket) being modified using <code>synchronized</code> on the first node. Uses CAS for resizing.</p>"
+    },
+    {
+        "id": 86,
+        "question": "ForkJoinPool?",
+        "alt": "Work-stealing concept?",
+        "answer": "<p>Specialized pool for recursive tasks (Divide and Conquer). Uses <strong>work-stealing</strong>: idle threads steal tasks from the deque of busy threads.</p>"
+    },
+    {
+        "id": 87,
+        "question": "Backpressure concept?",
+        "alt": "What happens when producers outpace consumers?",
+        "answer": "<p>A mechanism in reactive streams where the consumer signals to the producer how much data it can handle, preventing the consumer from being overwhelmed.</p>"
+    },
+    {
+        "id": 88,
+        "question": "Virtual threads (Java 21) basics?",
+        "alt": "What problem do virtual threads solve?",
+        "answer": "<h3 class='text-lg font-bold text-slate-200 mb-2'>Answer (Speak it):</h3><ul class='list-disc pl-5 space-y-2 mb-4'><li><strong>Virtual threads</strong> let you write blocking-style code (simple to read) but still handle massive concurrency.</li><li>They\u2019re <strong>lightweight</strong> because the JVM schedules them, so you can have many more than platform threads.</li><li><strong>Best fit:</strong> I/O-heavy services (HTTP calls, DB calls) where threads mostly wait.</li><li><strong>Tradeoff:</strong> they don\u2019t fix slow code; CPU-bound work still needs careful pooling.</li></ul>",
+        "code": "try (var exec = java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()) {\n  var futures = java.util.stream.IntStream.range(0, 10_000)\n      .mapToObj(i -> exec.submit(() -> httpCall(i))) // blocking call is OK\n      .toList();\n\n  for (var f : futures) f.get();\n}",
+        "footer": "<div class='mt-6 pt-6 border-t border-slate-800'><p class='mb-2'><strong class='text-blue-400'>Rule of thumb:</strong> If the work is \u201cmostly waiting on I/O,\u201d virtual threads are a strong default.</p><p><strong class='text-slate-400'>Common follow-up:</strong> \u201cThey\u2019re still threads\u2014use timeouts and good I/O hygiene.\u201d</p></div>"
+    },
+    {
+        "id": 89,
+        "question": "When NOT to use virtual threads?",
+        "alt": "Are virtual threads always faster?",
+        "answer": "<p>Do not use for CPU-bound tasks (number crunching). They are designed for I/O-bound tasks where threads spend time waiting.</p>"
+    },
+    {
+        "id": 90,
+        "question": "Structured concurrency (preview history)?",
+        "alt": "Why group tasks as a unit?",
+        "answer": "<p>Treats multiple tasks running in different threads as a single unit of work. If one fails, all are cancelled. Simplifies error handling and observability.</p>"
+    },
+    {
+        "id": 91,
+        "question": "Scoped values concept?",
+        "alt": "Better alternative to ThreadLocal?",
+        "answer": "<p>A way to share immutable data within a bounded scope (thread execution). More efficient and safer than ThreadLocal, especially with virtual threads.</p>"
+    },
+    {
+        "id": 92,
+        "question": "Synchronization cost?",
+        "alt": "Contention vs throughput?",
+        "answer": "<p>Synchronization introduces overhead: context switching, cache invalidation, and reduced parallelism. High contention leads to poor performance.</p>"
+    },
+    {
+        "id": 93,
+        "question": "ReentrantLock vs synchronized?",
+        "alt": "When do you need fairness/tryLock?",
+        "answer": "<p>Use <code>synchronized</code> by default (simpler). Use <code>ReentrantLock</code> if you need advanced features: fairness policy, interruptible lock waits, or <code>tryLock()</code>.</p>"
+    },
+    {
+        "id": 94,
+        "question": "Semaphore vs CountDownLatch?",
+        "alt": "Permits vs one-time gate?",
+        "answer": "<p><strong>Semaphore:</strong> Controls access with a set number of permits (throttle).</p><p><strong>CountDownLatch:</strong> Waits for N events to happen (one-time use).</p>"
+    },
+    {
+        "id": 95,
+        "question": "CyclicBarrier vs Phaser?",
+        "alt": "Reusable coordination patterns?",
+        "answer": "<p><strong>CyclicBarrier:</strong> Waits for N threads to reach a barrier. Reusable.</p><p><strong>Phaser:</strong> More flexible barrier. Number of registered parties can change dynamically.</p>"
+    },
+    {
+        "id": 96,
+        "question": "Producer/consumer patterns?",
+        "alt": "BlockingQueue use?",
+        "answer": "<p>Classic concurrency pattern. <code>BlockingQueue</code> (ArrayBlockingQueue, LinkedBlockingQueue) handles the thread safety and waiting logic automatically.</p>"
+    },
+    {
+        "id": 97,
+        "question": "Safe publication?",
+        "alt": "How do you publish objects safely?",
+        "answer": "<p>Ensuring an object is fully constructed before other threads see it. Techniques: static initializer, volatile field, final field, synchronized block.</p>"
+    },
+    {
+        "id": 98,
+        "question": "Immutability in concurrency?",
+        "alt": "Why immutable is thread-safe?",
+        "answer": "<p>Immutable objects cannot be changed after creation. They are inherently thread-safe and require no synchronization.</p>"
+    },
+    {
+        "id": 99,
+        "question": "Performance debugging threads?",
+        "alt": "How do you diagnose contention?",
+        "answer": "<p>Use Thread Dumps (jstack) to find deadlocks or stuck threads. Use Profilers (JProfiler, VisualVM) to analyze CPU usage and lock contention.</p>"
+    },
+    {
+        "id": 100,
+        "question": "Concurrency summary answer?",
+        "alt": "Your 45-second concurrency pitch?",
+        "answer": "<p>Concurrency allows efficient use of system resources. Modern Java moves away from low-level <code>synchronized</code>/<code>wait</code> towards high-level abstractions: <code>ExecutorService</code> for pools, <code>CompletableFuture</code> for async, and <code>Virtual Threads</code> for massive scalability.</p>"
+    }
+];
