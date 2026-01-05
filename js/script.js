@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         contentArea.classList.add('fade-in');
 
         const codeBlock = data.code ? `
-            <div class="mt-8">
+            <div class="mt-8 w-full">
                 <div class="flex items-center justify-between px-4 py-2 bg-slate-900 rounded-t-lg border border-slate-800 border-b-0">
                     <span class="text-xs font-mono text-slate-500">Example.java</span>
                     <div class="flex gap-1.5">
@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <div class="w-2.5 h-2.5 rounded-full bg-slate-700"></div>
                     </div>
                 </div>
-                <pre class="bg-slate-950 p-0 rounded-b-lg border border-slate-800 overflow-hidden text-sm font-mono leading-relaxed text-slate-300 shadow-2xl shadow-black/50"><code class="language-java p-6 block">${escapeHtml(data.code)}</code></pre>
+                <pre class="bg-slate-950 p-0 rounded-b-lg border border-slate-800 overflow-x-auto text-sm font-mono leading-relaxed text-slate-300 shadow-2xl shadow-black/50"><code class="language-java p-6 block">${escapeHtml(data.code)}</code></pre>
             </div>
         ` : '';
 
