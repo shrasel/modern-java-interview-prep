@@ -13,10 +13,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Define Chapters
     const chapters = [
-        { title: "Core Foundations", range: [1, 25], id: "ch1" },
-        { title: "Collections & Generics", range: [26, 50], id: "ch2" },
-        { title: "Functional Java", range: [51, 75], id: "ch3" },
-        { title: "Concurrency", range: [76, 100], id: "ch4" }
+        { title: "Core Foundations", range: [1, 26], id: "ch1" },
+        { title: "Collections & Generics", range: [27, 51], id: "ch2" },
+        { title: "Functional Java", range: [52, 76], id: "ch3" },
+        { title: "Concurrency", range: [77, 101], id: "ch4" }
     ];
 
     try {
