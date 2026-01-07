@@ -123,16 +123,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         contentArea.classList.add('fade-in');
 
         const codeBlock = data.code ? `
-            <div class="mt-8 w-full">
-                <div class="flex items-center justify-between px-4 py-2 bg-slate-900 rounded-t-lg border border-slate-800 border-b-0">
-                    <span class="text-xs font-mono text-slate-500">Example.java</span>
-                    <div class="flex gap-1.5">
-                        <div class="w-2.5 h-2.5 rounded-full bg-slate-700"></div>
-                        <div class="w-2.5 h-2.5 rounded-full bg-slate-700"></div>
-                        <div class="w-2.5 h-2.5 rounded-full bg-slate-700"></div>
-                    </div>
+            <div class="mt-8 w-full rounded-lg overflow-hidden border border-slate-800 bg-[#0d1623]">
+                <!-- Header -->
+                <div class="flex items-center justify-between px-4 py-2 bg-[#161b22] border-b border-slate-800">
+                    <span class="text-xs font-sans text-slate-400 font-semibold text-xs">java</span>
+                    <button class="copy-btn group flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-200 transition-colors cursor-pointer p-1 rounded hover:bg-slate-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <span class="font-medium">Copy code</span>
+                    </button>
                 </div>
-                <pre class="bg-slate-950 p-0 rounded-b-lg border border-slate-800 overflow-x-auto text-sm font-mono leading-relaxed text-slate-300 shadow-2xl shadow-black/50"><code class="language-java p-6 block">${escapeHtml(data.code)}</code></pre>
+                <!-- Code -->
+                <pre class="bg-[#0d1117] p-0 overflow-x-auto text-sm font-mono leading-relaxed text-slate-300"><code class="language-java p-5 block">${escapeHtml(data.code)}</code></pre>
             </div>
         ` : '';
 
@@ -162,6 +165,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelectorAll('pre code').forEach((block) => {
             hljs.highlightElement(block);
         });
+
+        // Add Copy Functionality
+        const copyBtn = contentArea.querySelector('.copy-btn');
+        if (copyBtn && data.code) {
+            copyBtn.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(data.code);
+                    
+                    // Success State
+                    const originalContent = copyBtn.innerHTML;
+                    copyBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span class="text-green-400">Copied!</span>
+                    `;
+                    
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalContent;
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy!', err);
+                }
+            });
+        }
     }
 
     function escapeHtml(text) {
