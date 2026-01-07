@@ -2,6 +2,8 @@
 
 A curated, interactive collection of **100+ Java interview questions** designed to help you master the core foundations. Unlike generic lists, this guide focuses on **how to speak** the answers, providing specific code examples and practical "rules of thumb."
 
+Link: https://shrasel.github.io/modern-java-interview-prep
+
 ## 🌟 Features
 
 *   **🗣 Answer (Speak it):** Concise, bulleted explanations designed for verbal delivery in interviews.
